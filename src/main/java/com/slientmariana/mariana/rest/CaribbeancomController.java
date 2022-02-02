@@ -1,0 +1,20 @@
+package com.slientmariana.mariana.rest;
+
+import com.slientmariana.mariana.service.caribeancom.CaribbeancomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("caribbeancom")
+public class CaribbeancomController {
+
+    @Autowired
+    private CaribbeancomService caribbeancomService;
+
+    @GetMapping("/")
+    public void getCaribbeancom(){
+        caribbeancomService.CreateCaribbeancom();
+    }
+}

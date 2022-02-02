@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: mariana
+
+server:
+  port: 10001
+
+studio:
+  caribbeancom:
+    name: Caribbeancom
+    uri: https://www.caribbeancom.com
+    moviepages: /moviepages/{code}/index.html
