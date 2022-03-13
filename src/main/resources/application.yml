@@ -8,5 +8,9 @@ server:
 studio:
   caribbeancom:
     name: Caribbeancom
+    prefix: Carib
     uri: https://www.caribbeancom.com
+    trailer: https://smovie.caribbeancom.com/sample/movies/{code}/{resolution}.mp4
     moviepages: /moviepages/{code}/index.html
+    gallery: /moviepages/{code}/images/gallery.zip
+    poster: /moviepages/{code}/images/l_l.jpg
