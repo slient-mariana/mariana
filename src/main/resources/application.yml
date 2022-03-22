@@ -5,12 +5,29 @@ spring:
 server:
   port: 10001
 
+app:
+  movie:
+    directory:
+      temporary: {TEMP_DIR}
+      mariana: {MARIANA_DIR}
+      akureyri: {AKUREYRI_DIR}
+
 studio:
   caribbeancom:
     name: Caribbeancom
+    japaneseName: カリビアンコム
     prefix: Carib
     uri: https://www.caribbeancom.com
     trailer: https://smovie.caribbeancom.com/sample/movies/{code}/{resolution}.mp4
     moviepages: /moviepages/{code}/index.html
     gallery: /moviepages/{code}/images/gallery.zip
     poster: /moviepages/{code}/images/l_l.jpg
+  pondo:
+    name: 1Pondo
+    japaneseName: 一本道
+    prefix: 1Pon
+    uri: https://www.1pondo.tv
+    movieDetails: /dyn/phpauto/movie_details/movie_id/{code}.json
+    movieGallery: /dyn/dla/json/movie_gallery/{code}.json
+    movieGalleries: /dyn/phpauto/movie_galleries/movie_id/{code}.json
+
