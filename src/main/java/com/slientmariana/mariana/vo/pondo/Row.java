@@ -8,4 +8,5 @@ import lombok.Setter;
 public class Row {
     String Img;
     boolean Protected;
+    String Filename;
 }

@@ -187,7 +187,7 @@ public class CaribbeancomServiceImpl implements CaribbeancomService {
                 actor.setName(actorName);
                 actor.setOrder(actorOrder);
                 actor.setRole(actorName);
-                log.info("Actor - Order: {}, Name: {}, Role: {}", actor.getOrder(), actor.getName(), actor.getRole());
+                log.info(actor.toString());
                 actorOrder = actorOrder + 1;
                 actors.add(actor);
             }

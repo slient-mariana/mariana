@@ -1,6 +1,7 @@
 package com.slientmariana.mariana.service.pondo;
 
 import com.google.gson.Gson;
+import com.slientmariana.mariana.config.resttemplate.RestTemplateResponseErrorHandler;
 import com.slientmariana.mariana.tools.Tools;
 import com.slientmariana.mariana.vo.Actor;
 import com.slientmariana.mariana.vo.MovieNfo;
@@ -14,10 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +38,9 @@ public class PondoServiceImpl implements PondoService{
 
     @Value("${studio.pondo.prefix}")
     private String studioPrefix;
+
+    @Value("${studio.pondo.name}")
+    private String englishName;
 
     @Value("${studio.pondo.japaneseName}")
     private String japaneseName;
@@ -71,6 +78,13 @@ public class PondoServiceImpl implements PondoService{
 
         // Step 4: Create NFO file
         tools.CreateNFOFile(movieNfo);
+
+        try {
+            // Step 5: Upload to emby server
+            tools.CopyDirectoryToServer(englishName, movieNfo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return movieNfo;
     }
@@ -179,7 +193,9 @@ public class PondoServiceImpl implements PondoService{
     private void downloadMultiMedia(MovieDetail movieDetail, MovieNfo movieNfo){
 
         String code = movieDetail.getMovieID();
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplateBuilder()
+                .errorHandler(new RestTemplateResponseErrorHandler())
+                .build();
 
         try {
             // Step 1a: Create Movie Directory
@@ -190,7 +206,7 @@ public class PondoServiceImpl implements PondoService{
             // Step 1b. Download Trailer
             Optional<SampleFile> sampleFile = movieDetail.getSampleFiles()
                     .stream()
-                    .max(Comparator.comparingInt(sample -> sample.getFileSize()));
+                    .max(Comparator.comparingInt(SampleFile::getFileSize));
             sampleFile.ifPresent(file ->{
                 try {
                     URL trailerUrl = new URL(file.getURL());
@@ -213,9 +229,9 @@ public class PondoServiceImpl implements PondoService{
 
             // Step 2: Movie Gallery API
             String movieGalleryUri = pondoUri + movieGalleryApi;
-            movieGalleryUri = movieGalleryUri.replace("{code}", code);
-            log.info("Movie Gallery Uri: {}", movieGalleryUri);
-            ResponseEntity<String> movieGalleryResponse = restTemplate.getForEntity(movieGalleryUri, String.class);
+            //movieGalleryUri = movieGalleryUri.replace("{code}", code);
+            //log.info("Movie Gallery Uri: {}", movieGalleryUri);
+            ResponseEntity<String> movieGalleryResponse = restTemplate.getForEntity(movieGalleryUri, String.class, code);
             if (movieGalleryResponse.getStatusCode().equals(HttpStatus.OK)){
                 MovieGallery movieGallery = new Gson().fromJson(movieGalleryResponse.getBody(), MovieGallery.class);
                 // https://www.1pondo.tv/dyn/dla/images/
@@ -232,11 +248,26 @@ public class PondoServiceImpl implements PondoService{
 
             // Step 3: Movie Galleries API
             String movieGalleriesUri = pondoUri + movieGalleriesApi;
-            movieGalleriesUri = movieGalleriesUri.replace("{code}", code);
-            log.info("Movie Galleries Uri: {}", movieGalleriesUri);
-            ResponseEntity<String> movieGalleriesResponse = restTemplate.getForEntity(movieGalleryUri, String.class);
+            //movieGalleriesUri = movieGalleriesUri.replace("{code}", code);
+            //log.info("Movie Galleries Uri: {}", movieGalleriesUri);
+            ResponseEntity<String> movieGalleriesResponse = restTemplate.getForEntity(movieGalleriesUri, String.class, code);
             if (movieGalleriesResponse.getStatusCode().equals(HttpStatus.OK)){
-
+                MovieGallery movieGalleries = new Gson().fromJson(movieGalleriesResponse.getBody(), MovieGallery.class);
+                String movieGalleriesBaseUri = pondoUri + "/assets/";
+                //https://www.1pondo.tv/assets/member/103119_922/popu/4.jpg
+                for (Row row : movieGalleries.getRows()){
+                    boolean protect = row.isProtected();
+                    String filename = row.getFilename();
+                    String imageUri;
+                    if (protect){
+                        imageUri = String.format("%smember/%s/popu/%s", movieGalleriesBaseUri, code, filename);
+                    }else {
+                        imageUri = String.format("%ssample/%s/popu/%s", movieGalleriesBaseUri, code, filename);
+                    }
+                    URL imageUrl = new URL(imageUri);
+                    File imageFile = new File(String.valueOf(extraFanArtDir), String.format("fanart%s",filename));
+                    FileUtils.copyURLToFile(imageUrl, imageFile);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
