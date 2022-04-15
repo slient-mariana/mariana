@@ -30,4 +30,11 @@ studio:
     movieDetails: /dyn/phpauto/movie_details/movie_id/{code}.json
     movieGallery: /dyn/dla/json/movie_gallery/{code}.json
     movieGalleries: /dyn/phpauto/movie_galleries/movie_id/{code}.json
+  heyzo:
+    name: Heyzo
+    japaneseName: Heyzo
+    prefix: Heyzo
+    uri: https://heyzo.com
+    uriEn: https://en.heyzo.com
+    moviepages: /moviepages/{code}/index.html
 
