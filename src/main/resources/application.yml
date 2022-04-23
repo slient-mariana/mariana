@@ -36,5 +36,8 @@ studio:
     prefix: Heyzo
     uri: https://heyzo.com
     uriEn: https://en.heyzo.com
+    trailer: /contents/3000/{code}/sample.mp4
     moviepages: /moviepages/{code}/index.html
-
+    poster: /contents/3000/{code}/images/player_thumbnail.jpg
+    gallery:
+      jjgirls: https://jjgirls.com/uncensored/heyzo/{actor}/{code}/{actor}-{currentPhotoNumber}.jpg
