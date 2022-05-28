@@ -51,6 +51,3 @@ studio:
     poster: /pics/product/{movieSecretId}/product_top.webp
     cashUri: http://cash.girlsdelta.com
     gallery: /gallery/delta/images/prod/{movieSecretId}/sample/{currentPhotoNumber}.jpg
-
-
-    #http://cash.girlsdelta.com/gallery/

@@ -46,10 +46,10 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
     @Value("${studio.girlsDelta.product}")
     private String productEndpoint;
 
-    @Value("${studio.girlsDelta.poster}")
+    @Value("${studio.girlsDelta.trailer}")
     private String trailerEndpoint;
 
-    @Value("${studio.girlsDelta.trailer}")
+    @Value("${studio.girlsDelta.poster}")
     private String posterEndpoint;
 
     @Value("${studio.girlsDelta.cashUri}")
@@ -148,7 +148,7 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             movieNfo.setSortTitle(custodianTitle);
 
             // 2. Plot
-            String plot = String.format("サイズ: {}", bodySize);
+            String plot = String.format("サイズ: %S", bodySize);
             log.info("Plot: {}", plot);
             movieNfo.setPlot(plot);
 
@@ -209,6 +209,7 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             // Step 2b: Download poster, fanart, landscape
             String posterFullUriString = baseUri + posterEndpoint;
             posterFullUriString = posterFullUriString.replace("{movieSecretId}", movieSecretId);
+            log.info("Poster Url: {}", posterFullUriString);
             URL posterUrl = new URL(posterFullUriString);
             File posterFile = new File(String.valueOf(movieDirectoryPath), "poster.jpg");
             File fanartFile = new File(String.valueOf(movieDirectoryPath), "fanart.jpg");
