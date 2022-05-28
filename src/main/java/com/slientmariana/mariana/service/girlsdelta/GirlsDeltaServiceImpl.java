@@ -167,6 +167,22 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             movieNfo.setLanguage("ja");
 
             // 7. Release Date
+            if (releaseDate == null){
+                String allGallery = cashUri + "/gallery/";
+                Document allGalleryDocument = Jsoup.connect(allGallery)
+                        .userAgent("Mozilla")
+                        .timeout(5000)
+                        .get();
+
+                Elements galleries = allGalleryDocument.getElementsByTag("li");
+                for (Element element : galleries){
+                    String galleryTitle = element.getElementsByClass("title").first().text();
+                    if (galleryTitle.equals(title)){
+                        String galleryDate = element.getElementsByClass("date").first().text();
+                        releaseDate = galleryDate.substring(0,10);
+                    }
+                }
+            }
             movieNfo.setPremiered(releaseDate);
             movieNfo.setReleaseDate(releaseDate);
             movieNfo.setYear(releaseDate.substring(0,4));
