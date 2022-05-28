@@ -48,8 +48,9 @@ studio:
     uri: https://girlsdelta.com
     product: /product/{code}
     trailer: /pics/product/{movieSecretId}/movie.mp4
+    poster: /pics/product/{movieSecretId}/product_top.webp
     cashUri: http://cash.girlsdelta.com
-    gallery: /gallery/delta/images/prod/b6a36caf17e2d5a48af7a661457e2fa4/sample/{currentPhotoNumber}.jpg
+    gallery: /gallery/delta/images/prod/{movieSecretId}/sample/{currentPhotoNumber}.jpg
 
 
     #http://cash.girlsdelta.com/gallery/

@@ -1,5 +1,6 @@
 package com.slientmariana.mariana.service.girlsdelta;
 
+import com.slientmariana.mariana.tools.Tools;
 import com.slientmariana.mariana.vo.Actor;
 import com.slientmariana.mariana.vo.MovieNfo;
 import com.slientmariana.mariana.vo.MovieRequestDTO;
@@ -9,6 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +28,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class GirlsDeltaServiceImpl implements GirlsDeltaService{
+
+    static int GALLERY_SIZE = 20;
+
+    @Value("${studio.girlsDelta.name}")
+    private String englishName;
 
     @Value("${studio.girlsDelta.japaneseName}")
     private String japaneseName;
@@ -38,24 +46,45 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
     @Value("${studio.girlsDelta.product}")
     private String productEndpoint;
 
-    @Value("${studio.girlsDelta.trailer}")
+    @Value("${studio.girlsDelta.poster}")
     private String trailerEndpoint;
+
+    @Value("${studio.girlsDelta.trailer}")
+    private String posterEndpoint;
+
+    @Value("${studio.girlsDelta.cashUri}")
+    private String cashUri;
+
+    @Value("${studio.girlsDelta.gallery}")
+    private String galleryEndpoint;
 
     @Value("${app.movie.directory.temporary}")
     private String temporaryDirectory;
+
+    @Autowired
+    private Tools tools;
 
     private String movieSecretId;
 
     @Override
     public MovieNfo CreateGirlsDelta(MovieRequestDTO dto){
         String code = dto.getCode();
-        code = "1710";
 
         // Step 1: Get movie metadata from web
         MovieNfo movieNfo = GetMovieData(code);
 
         // Step 2: Download Movie MultiMedia
         downloadMultiMedia(code, movieNfo);
+
+        // Step 3: Create NFO file
+        tools.CreateNFOFile(movieNfo);
+
+        try {
+            // Step 4: Upload to emby server
+            tools.CopyDirectoryToServer(englishName, movieNfo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return movieNfo;
     }
@@ -94,11 +123,13 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             }
 
             String actorsJapaneseName = "";
+            String bodySize = "";
             List<String> genres = null;
             for (Element element : actressElement.getElementsByTag("li")){
                 String elementType = element.getElementsByTag("h4").first().text();
                 switch (elementType) {
                     case "モデル名" -> actorsJapaneseName = element.getElementsByTag("a").first().text();
+                    case "サイズ" -> bodySize = element.getElementsByTag("p").first().text();
                     case "モデルカテゴリ" -> genres = element.getElementsByTag("a")
                             .stream()
                             .map(Element::text)
@@ -115,6 +146,11 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             movieNfo.setOriginalTitle(title);
             movieNfo.setTitle(custodianTitle);
             movieNfo.setSortTitle(custodianTitle);
+
+            // 2. Plot
+            String plot = String.format("サイズ: {}", bodySize);
+            log.info("Plot: {}", plot);
+            movieNfo.setPlot(plot);
 
             // 3. mmpa
             movieNfo.setMpaa("NC-17");
@@ -171,7 +207,28 @@ public class GirlsDeltaServiceImpl implements GirlsDeltaService{
             FileUtils.copyURLToFile(trailerUrl, trailerFile);
 
             // Step 2b: Download poster, fanart, landscape
+            String posterFullUriString = baseUri + posterEndpoint;
+            posterFullUriString = posterFullUriString.replace("{movieSecretId}", movieSecretId);
+            URL posterUrl = new URL(posterFullUriString);
+            File posterFile = new File(String.valueOf(movieDirectoryPath), "poster.jpg");
+            File fanartFile = new File(String.valueOf(movieDirectoryPath), "fanart.jpg");
+            File landscapFile = new File(String.valueOf(movieDirectoryPath), "landscape.jpg");
+            FileUtils.copyURLToFile(posterUrl, posterFile);
+            Files.copy(posterFile.toPath(), fanartFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(posterFile.toPath(), landscapFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+            // Step 2d: Download extrafanart
+            File extraFanArtDir = new File(String.valueOf(movieDirectoryPath), "extrafanart");
+            String galleryUriStr = cashUri + galleryEndpoint;
+            galleryUriStr = galleryUriStr
+                    .replace("{movieSecretId}", movieSecretId);
+
+            for (int currentPhototCount = 1; currentPhototCount <= GALLERY_SIZE; currentPhototCount++) {
+                String imageUri = galleryUriStr.replace("{currentPhotoNumber}",String.valueOf(currentPhototCount));
+                URL imageUrl = new URL(imageUri);
+                File imageFile = new File(String.valueOf(extraFanArtDir), String.format("fanart%s.jpg",currentPhototCount));
+                FileUtils.copyURLToFile(imageUrl, imageFile);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
