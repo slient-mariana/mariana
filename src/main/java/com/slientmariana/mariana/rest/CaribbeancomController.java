@@ -1,10 +1,8 @@
 package com.slientmariana.mariana.rest;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.slientmariana.mariana.service.caribeancom.CaribbeancomService;
+import com.slientmariana.mariana.service.car.CarService;
 import com.slientmariana.mariana.vo.MovieNfo;
 import com.slientmariana.mariana.vo.MovieRequestDTO;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
@@ -22,7 +19,7 @@ import java.util.stream.Stream;
 public class CaribbeancomController {
 
     @Autowired
-    private CaribbeancomService caribbeancomService;
+    private CarService caribbeancomService;
 
     @PostMapping("/")
     public MovieNfo getCaribbeancom(@RequestBody MovieRequestDTO dto){

@@ -1,4 +1,4 @@
-package com.slientmariana.mariana.service.caribeancom;
+package com.slientmariana.mariana.service.car;
 
 import com.slientmariana.mariana.tools.Tools;
 import com.slientmariana.mariana.vo.Actor;
@@ -28,12 +28,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CaribbeancomServiceImpl implements CaribbeancomService {
+public class CarServiceImpl implements CarService {
 
     final String OLD_FORMAT = "yyyy/MM/dd";
     final String NEW_FORMAT = "yyyy-MM-dd";
@@ -67,6 +66,12 @@ public class CaribbeancomServiceImpl implements CaribbeancomService {
 
     @Autowired
     private Tools tools;
+
+    @Override
+    public List<MovieNfo> CreateCar(List<String> codes){
+        return codes.stream()
+                .forEach(this::CreateCaribbeancom);
+    }
 
     @Override
     public MovieNfo CreateCaribbeancom(MovieRequestDTO dto){
@@ -238,6 +243,7 @@ public class CaribbeancomServiceImpl implements CaribbeancomService {
             // Step 2d: Download Trailer
             String trailerUriStr = trailerUri.replace("{code}", code);
             trailerUriStr = trailerUriStr.replace("{resolution}", "1080p");
+            //trailerUriStr = trailerUriStr.replace("{resolution}", "720p");
             URL trailerUrl = new URL(trailerUriStr);
             File trailerFile = new File(String.valueOf(movieDirectoryPath), String.format("%s - trailer.mp4", movieNfo.getTitle()));
             FileUtils.copyURLToFile(trailerUrl, trailerFile);
