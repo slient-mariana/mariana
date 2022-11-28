@@ -6,6 +6,6 @@ import com.slientmariana.mariana.vo.MovieRequestDTO;
 import java.util.List;
 
 public interface CarService {
-    MovieNfo CreateCaribbeancom(MovieRequestDTO dto);
+    MovieNfo CreateCaribbeancom(String code);
     List<MovieNfo> CreateCar(List<String> codes);
 }

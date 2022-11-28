@@ -1,4 +1,4 @@
-package com.slientmariana.mariana.service.heyzo;
+package com.slientmariana.mariana.service.hey;
 
 import com.slientmariana.mariana.tools.Tools;
 import com.slientmariana.mariana.vo.Actor;
@@ -25,10 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class HeyzoServiceImpl implements HeyzoService{
+public class HeyServiceImpl implements HeyService {
 
     static int GALLERY_SIZE = 21;
 
@@ -66,8 +67,14 @@ public class HeyzoServiceImpl implements HeyzoService{
     private Tools tools;
 
     @Override
-    public MovieNfo CreateHeyzo(MovieRequestDTO dto){
-        String code = dto.getCode();
+    public List<MovieNfo> CreateHey(List<String> codes){
+        return codes.stream()
+                .map(this::CreateHeyzo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MovieNfo CreateHeyzo(String code){
 
         // Step 1: Get Movie Data
         MovieNfo movieNfo = GetMovieData(code);
@@ -259,7 +266,7 @@ public class HeyzoServiceImpl implements HeyzoService{
             trailerUriStr = trailerUriStr.replace("{code}", code);
             URL trailerUrl = new URL(trailerUriStr);
             File trailerFile = new File(String.valueOf(movieDirectoryPath), String.format("%s - trailer.mp4", movieNfo.getTitle()));
-            FileUtils.copyURLToFile(trailerUrl, trailerFile);
+            FileUtils.copyURLToFile(trailerUrl, trailerFile,10 * 1000, 10 * 1000);
 
             // Step 2d: Download extrafanart
             // find English Name inside ()

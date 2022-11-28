@@ -70,12 +70,12 @@ public class CarServiceImpl implements CarService {
     @Override
     public List<MovieNfo> CreateCar(List<String> codes){
         return codes.stream()
-                .forEach(this::CreateCaribbeancom);
+                .map(this::CreateCaribbeancom)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public MovieNfo CreateCaribbeancom(MovieRequestDTO dto){
-        String code = dto.getCode();
+    public MovieNfo CreateCaribbeancom(String code){
 
         // Step 1: Get Movie Data
         MovieNfo movieNfo = GetMovieData(code);

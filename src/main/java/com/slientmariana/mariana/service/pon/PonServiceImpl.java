@@ -1,11 +1,10 @@
-package com.slientmariana.mariana.service.pondo;
+package com.slientmariana.mariana.service.pon;
 
 import com.google.gson.Gson;
 import com.slientmariana.mariana.config.resttemplate.RestTemplateResponseErrorHandler;
 import com.slientmariana.mariana.tools.Tools;
 import com.slientmariana.mariana.vo.Actor;
 import com.slientmariana.mariana.vo.MovieNfo;
-import com.slientmariana.mariana.vo.MovieRequestDTO;
 import com.slientmariana.mariana.vo.Set;
 import com.slientmariana.mariana.vo.pondo.MovieDetail;
 import com.slientmariana.mariana.vo.pondo.MovieGallery;
@@ -29,10 +28,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class PondoServiceImpl implements PondoService{
+public class PonServiceImpl implements PonService {
 
     @Value("${studio.pondo.prefix}")
     private String studioPrefix;
@@ -62,9 +62,15 @@ public class PondoServiceImpl implements PondoService{
     private Tools tools;
 
     @Override
-    public MovieNfo Create1Pondo(MovieRequestDTO dto){
+    public List<MovieNfo> CreatePon(List<String> codes){
+        return codes.stream()
+                .map(this::Create1Pondo)
+                .collect(Collectors.toList());
+    }
 
-        String code = dto.getCode();
+    @Override
+    public MovieNfo Create1Pondo(String code){
+
         // Step 1: Get Movie Data
         MovieDetail movieDetail = GetMovieDetail(code);
 
