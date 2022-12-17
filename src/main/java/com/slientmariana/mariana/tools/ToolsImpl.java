@@ -56,7 +56,7 @@ public class ToolsImpl implements Tools{
     @Override
     public void CreateNFOFile(MovieNfo nfo){
         String movieDirectory = ConcatenateMovieDirectory(nfo);
-        Path movieDirectoryPath = Paths.get(movieDirectory);
+        Path movieDirectoryPath = Paths.get(movieDirectory.trim());
         String nfoFileName = String.format("%s.nfo", nfo.getTitle());
         XmlMapper xmlMapper = new XmlMapper();
 

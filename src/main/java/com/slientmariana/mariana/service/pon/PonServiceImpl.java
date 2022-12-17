@@ -203,7 +203,7 @@ public class PonServiceImpl implements PonService {
 
         try {
             // Step 1a: Create Movie Directory
-            String movieDirectory = String.format("%s/%s",temporaryDirectory, movieNfo.getTitle());
+            String movieDirectory = String.format("%s/%s",temporaryDirectory, movieNfo.getTitle().trim());
             Path movieDirectoryPath = Paths.get(movieDirectory);
             Files.createDirectories(movieDirectoryPath);
 
