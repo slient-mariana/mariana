@@ -30,6 +30,14 @@ studio:
     movieDetails: /dyn/phpauto/movie_details/movie_id/{code}.json
     movieGallery: /dyn/dla/json/movie_gallery/{code}.json
     movieGalleries: /dyn/phpauto/movie_galleries/movie_id/{code}.json
+  mus:
+    name: 10musume
+    japaneseName: 天然むすめ
+    prefix: 10mu
+    uri: https://www.10musume.com
+    movieDetails: /dyn/phpauto/movie_details/movie_id/{code}.json
+    movieGallery: /dyn/dla/json/movie_gallery/{code}.json
+    movieGalleries: /dyn/phpauto/movie_galleries/movie_id/{code}.json
   heyzo:
     name: Heyzo
     japaneseName: Heyzo

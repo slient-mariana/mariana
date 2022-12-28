@@ -57,7 +57,7 @@ public class ToolsImpl implements Tools{
     public void CreateNFOFile(MovieNfo nfo){
         String movieDirectory = ConcatenateMovieDirectory(nfo);
         Path movieDirectoryPath = Paths.get(movieDirectory.trim());
-        String nfoFileName = String.format("%s.nfo", nfo.getTitle());
+        String nfoFileName = String.format("%s.nfo", nfo.getTitle().trim());
         XmlMapper xmlMapper = new XmlMapper();
 
         try {
@@ -71,12 +71,12 @@ public class ToolsImpl implements Tools{
     @Override
     public void CopyDirectoryToServer(String studioEnglishName, MovieNfo nfo) throws IOException {
         String sourceDirectory = ConcatenateMovieDirectory(nfo);
-        String destinationDirectory = String.format("%s/Studio/%s/%s/%s", marianaDirectory,studioEnglishName,nfo.getYear(),nfo.getTitle());
+        String destinationDirectory = String.format("%s/Studio/%s/%s/%s", marianaDirectory,studioEnglishName,nfo.getYear(),nfo.getTitle().trim());
         FileUtils.copyDirectory(new File(sourceDirectory), new File(destinationDirectory));
     }
 
     private String ConcatenateMovieDirectory(MovieNfo nfo){
-        return String.format("%s/%s",temporaryDirectory, nfo.getTitle());
+        return String.format("%s/%s",temporaryDirectory, nfo.getTitle().trim());
     }
 
 
